@@ -12,6 +12,7 @@ draggables.forEach(draggable => {
 
 function makeDraggable(draggable) {
     draggable.addEventListener("mousedown", mouseDown);
+    draggable.addEventListener("touchstart", mouseDown);
     draggable.ondragstart = function() {
         return false;
     }
@@ -39,7 +40,9 @@ function makeDraggable(draggable) {
         console.log(originalY);
     
         document.addEventListener("mousemove", mouseMove);
+        document.addEventListener("touchmove", mouseMove);
         draggable.addEventListener("mouseup", mouseUp);
+        draggable.addEventListener("touchend", mouseUp);
     }
     
     function mouseMove(e) {
@@ -91,7 +94,9 @@ function makeDraggable(draggable) {
         draggable.style.top = 0;
     
         draggable.removeEventListener("mouseup", mouseUp);
+        draggable.removeEventListener("touchend", mouseUp);
         document.removeEventListener("mousemove", mouseMove);
+        document.removeEventListener("touchmove", mouseMove);
     }
 }
 
