@@ -1,0 +1,58 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #2d2d2d;
+}
+
+.draggable {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background-color: blue;
+}
+
+.draggable-active {
+    background-color: deepskyblue;
+}
+
+.dropzone {
+    width: 100px;
+    height: 100px;
+    border: black 1px solid;
+    position: relative;
+}
+
+.droppable {
+    background-color: lavenderblush;
+}
+
+.droppable-hovered {
+    background-color: dimgray;
+}
+
+.puzzle-container {
+    padding: 20px;
+    margin: 100px;
+    height: auto;
+    width: auto;
+    border: black 1px solid;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
+    background-color: rgb(197, 184, 189);
+}
+
+.puzzle-piece-box {
+    width: 100px;
+    height: 100px;
+    border: red solid 4px;
+    position: relative;
+}
+
+.puzzle-row {
+    display: flex;
+}
