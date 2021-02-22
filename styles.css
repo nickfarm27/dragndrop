@@ -1,17 +1,25 @@
 * {
     margin: 0;
     padding: 0;
+    font-family:Arial, Helvetica, sans-serif;
 }
 
 body {
     background-color: #2d2d2d;
 }
 
-.draggable {
+.puzzle-piece {
     position: absolute;
     width: 100px;
     height: 100px;
-    background-color: blue;
+    background-color: rgb(10, 235, 186);
+    color: black;
+    user-select: none;
+    cursor: pointer;
+}
+
+.draggable {
+    background-color: cornflowerblue;
 }
 
 .draggable-active {
@@ -21,7 +29,7 @@ body {
 .dropzone {
     width: 100px;
     height: 100px;
-    border: black 1px solid;
+    border: black 2px solid;            /*? Outline is another option */
     position: relative;
 }
 
@@ -49,10 +57,20 @@ body {
 .puzzle-piece-box {
     width: 100px;
     height: 100px;
-    border: red solid 4px;
+    border: rgb(46, 53, 51) solid 4px;
     position: relative;
 }
 
 .puzzle-row {
     display: flex;
+}
+
+.big-border {
+    border-radius: 50%;
+}
+
+.puzzle-solved {
+    transition-property: border-width;
+    transition-duration: 1s;
+    border-width: 0;
 }

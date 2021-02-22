@@ -1,4 +1,4 @@
-let draggables = document.querySelectorAll(".draggable");
+let draggables = null;
 let shiftX = 0;
 let shiftY = 0;
 let originalX = 0;
@@ -6,21 +6,35 @@ let originalY = 0;
 let currentDroppable = null;
 let zIndex = 10;
 
-draggables.forEach(draggable => {
-    makeDraggable(draggable);
-});
+refreshDraggables();
+
+//* NEW
+function refreshDraggables() {
+    draggables = document.querySelectorAll(".draggable");
+
+    //? Check if the entire puzzle is solved. If not, refresh the draggables
+    if (draggables === [] || draggables.length == 0) {
+        document.querySelectorAll(".dropzone").forEach(element => {
+            element.classList.add("puzzle-solved");
+        });
+    } else {
+        draggables.forEach(draggable => {
+            makeDraggable(draggable);
+        });
+    }
+}
 
 function makeDraggable(draggable) {
     draggable.addEventListener("mousedown", mouseDown);
-    draggable.addEventListener("touchstart", mouseDown);
+    
+    draggable.addEventListener("touchstart", (e) => {
+        console.log(e);
+    });
     draggable.ondragstart = function() {
         return false;
     }
 
     function mouseDown(e) {
-        console.log("down");
-        console.log(e);
-    
         //? OPTIONAL ANIMATIONS
         draggable.style.transitionProperty = "background-color";
         draggable.style.transitionDuration = "500ms";
@@ -36,19 +50,13 @@ function makeDraggable(draggable) {
         shiftX = e.clientX - originalX;
         shiftY = e.clientY - originalY;
     
-        console.log(originalX);
-        console.log(originalY);
-    
         document.addEventListener("mousemove", mouseMove);
-        document.addEventListener("touchmove", mouseMove);
+        // document.addEventListener("touchmove", mouseMove);
         draggable.addEventListener("mouseup", mouseUp);
-        draggable.addEventListener("touchend", mouseUp);
+        // draggable.addEventListener("touchend", mouseUp);
     }
     
     function mouseMove(e) {
-        // console.log("move");
-        // console.log(e);
-    
         draggable.style.left = e.pageX - shiftX - originalX + "px";
         draggable.style.top = e.pageY - shiftY - originalY + "px";
     
@@ -70,33 +78,68 @@ function makeDraggable(draggable) {
     }
     
     function mouseUp(e) {
-        console.log("up");
-        // console.log(e);
-    
+        let append = true;
         draggable.classList.remove("draggable-active");
 
-        //! Use later for verification of correct piece
-        // draggable.removeEventListener("mousedown", mouseDown);
-    
-        if (currentDroppable) {
-            currentDroppable.append(draggable);
-            currentDroppable.classList.remove("droppable-hovered");
-
-            //! Use later for verification of correct piece
-            // currentDroppable.classList.remove("droppable");
-        }
-
-        //? OPTIONAL
+        //? OPTIONAL TRANSITION EFFECTS
         draggable.style.transitionProperty = "left, top";
         draggable.style.transitionDuration = "0.4s";
 
         draggable.style.left = 0;
         draggable.style.top = 0;
+
+        if (currentDroppable) {
+            if (currentDroppable.childElementCount > 0) {
+                // console.log(this.parentElement);        //? parent element of the draggable item
+                // console.log(currentDroppable.firstElementChild);
+
+                if (this.parentElement.classList[0] !== "puzzle-piece-box") {
+                    
+                    this.parentElement.append(currentDroppable.firstElementChild);      //? enable swapping
+                    
+                    //* NEW - check if the swapped puzzle piece is in the correct position
+                    if (this.parentElement.lastElementChild.classList[0] === this.parentElement.classList[0]) {
+                        this.parentElement.lastElementChild.classList.remove("draggable");
+                        console.log(this.parentElement.lastElementChild.classList);
+                    }
+
+                } else {
+                    append = false;
+                }
+            }
+
+            if (append) {
+                currentDroppable.append(draggable);
+            }
+            
+            currentDroppable.classList.remove("droppable-hovered");
+            
+            //* to verify the correct piece and make it unusable
+            if (currentDroppable.classList[0] === this.classList[0]) {
+                currentDroppable.classList.remove("droppable");
+                this.classList.remove("draggable");             //* NEW
+            }
+
+            //* NEW
+            checkPuzzle(); //? Checks if the puzzle is complete
+        }
     
-        draggable.removeEventListener("mouseup", mouseUp);
-        draggable.removeEventListener("touchend", mouseUp);
+        draggable.removeEventListener("mouseup", mouseUp);      //* Still needed if draggable didn't drop on a droppable
+        // draggable.removeEventListener("touchend", mouseUp);
         document.removeEventListener("mousemove", mouseMove);
-        document.removeEventListener("touchmove", mouseMove);
+        // document.removeEventListener("touchmove", mouseMove);
+
+        currentDroppable = null;
+    }
+
+    //* NEW -> to remove all event listeners and allow the swap verification to work
+    function checkPuzzle() {
+        draggables.forEach(draggable => {
+            let old_element = draggable;
+            let new_element = old_element.cloneNode(true);
+            old_element.parentNode.replaceChild(new_element, old_element);
+        });
+        refreshDraggables();
     }
 }
 
